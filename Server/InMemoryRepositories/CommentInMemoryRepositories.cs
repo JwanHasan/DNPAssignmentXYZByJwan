@@ -4,48 +4,49 @@ namespace InMemoryRepositories;
 
 public class CommentInMemoryRepositories
 {
-    public List<Comment> Comments = new();
+    public List<Comment> comments = new();
     
         public Task<Comment> AddAsync(Comment comment)
         {
-            comment.Id = Comments.Any()
-                ? Comments.Max(c Comment.Id) + 1
+            comment.Id = comments.Any()
+                ? comments.Max(c => c.Id) + 1
                 : 1;
-            Comments.Add(comment);
+            comments.Add(comment);
             return Task.FromResult(comment);
     
         } 
         public Task UpdateAsync(Comment comment)
         {
-            Comment? existingComment = Comments.SingleOrDefault(c => c.Id == comment.Id);
+            Comment? existingComment = comments.SingleOrDefault(c => c.Id == comment.Id);
             if (existingComment is null)
             {
                 throw new InvalidOperationException(
                     $"Comment with ID '{comment.Id}' not found");
             }
     
-            Comments.Remove(existingComment);
-            Comments.Add(comment);
+            comments.Remove(existingComment);
+            comments.Add(comment);
     
             return Task.CompletedTask;
         }
         
         public Task DeleteAsync(int id)
         {
-            Comment? commentToRemove = Comments.SingleOrDefault(c Comment.Id == id);
+            Comment? commentToRemove = comments.SingleOrDefault(c => c.Id == id);
             if (commentToRemove is null)
             {
                 throw new InvalidOperationException(
                     $"Comment with ID '{id}' not found");
             }
     
-            Comments.Remove(commentToRemove);
+            comments.Remove(commentToRemove);
             return Task.CompletedTask;
         }
         
         public Task<Comment> GetSingleAsync(int id)
         {
-            Comment? getSingle = Comments.SingleOrDefault(c => c.Id == id);
+            
+            Comment? getSingle = comments.SingleOrDefault(c => c.Id == id);
             if (getSingle is null)
             {
                 throw new InvalidOperationException(
@@ -55,8 +56,6 @@ public class CommentInMemoryRepositories
         }
         public IQueryable<Comment> GetManyAsync()
         {
-            return Comments.AsQueryable();
+            return comments.AsQueryable();
         }
-    
-
-}
+  }      

@@ -2,7 +2,7 @@ using Entities;
 using RepositoryContracts;
 namespace InMemoryRepositories;
 
-public class UserInMemoryRepositories
+public class UserInMemoryRepositories : IUserRepository
 {
     public List<User> Users = new();
 

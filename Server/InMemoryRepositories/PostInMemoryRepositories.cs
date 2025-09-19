@@ -2,7 +2,7 @@ using Entities;
 using RepositoryContracts;
 namespace InMemoryRepositories;
 
-public class PostInMemoryRepositories
+public class PostInMemoryRepositories : IPostRepository
 {
     public List<Post> posts = new();
 

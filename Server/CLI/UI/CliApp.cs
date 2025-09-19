@@ -36,7 +36,7 @@ public class CliApp
                 }
                 case "2":
                 {
-                    new ManagePostsView(postRepository).ShowAsync();break;
+                    new ManagePostsView(postRepository,commentRepository).ShowAsync();break;
                 }
                 
                 

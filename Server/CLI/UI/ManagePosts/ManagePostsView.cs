@@ -7,9 +7,11 @@ namespace CLI.UI.ManagePosts;
 public class ManagePostsView
 {
     private IPostRepository postRepositories;
-    public ManagePostsView(IPostRepository postRepository)
+    private ICommentRepository commentRepositories;
+    public ManagePostsView(IPostRepository postRepository, ICommentRepository commentRepository)
     {
         this.postRepositories = postRepository;
+        this.commentRepositories = commentRepository;
     }
 
     public void ShowAsync()
@@ -17,7 +19,7 @@ public class ManagePostsView
         Message();
         string? commands = Console.ReadLine();
         ListPostsView postList = new(postRepositories);
-        SinglePostView singlePostView = new(postRepositories);
+        SinglePostView singlePostView = new(postRepositories,commentRepositories);
         switch (commands)
         {
             case "1":

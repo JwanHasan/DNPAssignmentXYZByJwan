@@ -22,7 +22,7 @@ User newUser = new()
 
 };
 Post newPost = new(){Body = "Hello World", Title = "how to "};
-Comment newComment = new(){Body = "Hello World",Id=1,UserId = 1};
+Comment newComment = new(){Body = "Hello World",Id = newPost.Id,UserId = newUser.Id};
 
 await userRepository.AddAsync(user); 
 await userRepository.AddAsync(newUser); 

@@ -13,7 +13,7 @@ public class ListPostsView
     public void ListPosts()
     {
         postRepository.GetManyAsync().ToList().ForEach(p=>
-            Console.WriteLine($"Title: {p.Title} Post Id: {p.Id}"));
+            Console.WriteLine($"Title: {p.Title} Body: {p.Body} Post Id: {p.Id}"));
     }
 
     

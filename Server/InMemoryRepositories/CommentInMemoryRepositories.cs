@@ -2,9 +2,9 @@ using Entities;
 using RepositoryContracts;
 namespace InMemoryRepositories;
 
-public class CommentInMemoryRepositories
+public class CommentInMemoryRepositories : ICommentRepository
 {
-    public List<Comment> comments = new();
+    private List<Comment> comments = new();
     
         public Task<Comment> AddAsync(Comment comment)
         {

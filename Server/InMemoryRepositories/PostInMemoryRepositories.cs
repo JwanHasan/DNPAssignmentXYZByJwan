@@ -2,7 +2,7 @@ using Entities;
 using RepositoryContracts;
 namespace InMemoryRepositories;
 
-public class PostInMemoryRepositories
+public class PostInMemoryRepositories : IPostRepository
 {
     public List<Post> posts = new();
 
@@ -13,7 +13,7 @@ public class PostInMemoryRepositories
             : 1;
         posts.Add(post);
         return Task.FromResult(post);
-
+ 
     } 
     public Task UpdateAsync(Post post)
     {

@@ -1,5 +1,5 @@
 using Entities;
-using InMemoryRepositories;
+using FileRepositories;
 using RepositoryContracts;
 
 namespace CLI.UI.ManagePosts;
@@ -50,7 +50,7 @@ public class ManagePostsView
                 
                 Console.WriteLine("Write the comment");
                 string? commentBody = Console.ReadLine();
-                ICommentRepository comnts = new CommentInMemoryRepositories();
+                ICommentRepository comnts = new CommentFileRepository();
                 comnts.AddAsync(new Comment() { Body = commentBody, Id = postId, UserId = usId});
                 break;
             }

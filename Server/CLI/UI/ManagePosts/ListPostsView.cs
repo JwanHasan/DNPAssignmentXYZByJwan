@@ -1,7 +1,7 @@
 using RepositoryContracts;
+using FileRepositories;
 
 namespace CLI.UI.ManagePosts;
-using InMemoryRepositories;
 public class ListPostsView
 {
     private readonly IPostRepository postRepository;

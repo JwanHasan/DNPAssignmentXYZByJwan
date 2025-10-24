@@ -58,5 +58,17 @@ public class UserInMemoryRepositories : IUserRepository
         return Users.AsQueryable();
     }
 
+    public Task<User> GetUserByUsernameAsync(string username)
+    {
+        
 
+        User? user = Users.FirstOrDefault(u => u.UserName == username);
+
+        if (user == null)
+        {
+            throw new Exception("User not found");
+        }
+
+        return Task.FromResult(user);
+    }
 }

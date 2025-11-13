@@ -3,34 +3,34 @@ using DTOContracts;
 
 namespace BlazorApp.Services;
 
-public class HttpUserService : IUserService
+public class HttpPostService: IPostService
 {
     private readonly HttpClient client;
-    public HttpUserService(HttpClient client)
+ 
+     public HttpPostService(HttpClient client)
+     {
+         this.client = client;
+     }
+     
+    public async  Task<PostDto> AddAsync(RequestPostDto postDto)
     {
-        this.client = client;
-    }
-
-    public async Task<UserDto> AddAsync(RequestUserDto user)
-    {
-        HttpResponseMessage httpResponse = await client.PostAsJsonAsync("users", user.UserName);
+        HttpResponseMessage httpResponse = await client.PostAsJsonAsync("posts", postDto);
         string response = await httpResponse.Content.ReadAsStringAsync();
         if (!httpResponse.IsSuccessStatusCode)
         {
             throw new Exception(response);
         }
 
-        return JsonSerializer.Deserialize<UserDto>(response, new JsonSerializerOptions
+        return JsonSerializer.Deserialize<PostDto>(response, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
             }
         )!;
-
     }
 
-    public async Task UpdateAsync(RequestUserDto user)
+    public async Task UpdateAsync(RequestPostDto postDto)
     {
-        HttpResponseMessage httpResponse = await client.PutAsJsonAsync($"users/{user.UserName}", user);
+        HttpResponseMessage httpResponse = await client.PutAsJsonAsync($"posts/{postDto.Id}", postDto);
         string response = await httpResponse.Content.ReadAsStringAsync();
         if (!httpResponse.IsSuccessStatusCode)
         {
@@ -39,51 +39,50 @@ public class HttpUserService : IUserService
         }
     }
 
-    public async Task DeleteAsync(string username)
+    public async Task DeleteAsync(int postId)
     {
-        HttpResponseMessage httpResponse = await client.DeleteAsync($"Users/{username}");
+        HttpResponseMessage httpResponse = await client.DeleteAsync($"posts/{postId}");
         if (!httpResponse.IsSuccessStatusCode)
         {
             string response = await httpResponse.Content.ReadAsStringAsync();
             throw new Exception(response);
         }
+        
     }
 
-    public async Task<UserDto> GetSingleAsync(string username)
+    public async Task<PostDto> GetSingleAsync(int postId)
     {
-        HttpResponseMessage httpResponse = await client.GetAsync($"users/{username}");
+        HttpResponseMessage httpResponse = await client.GetAsync($"posts/{postId}");
         string response = await httpResponse.Content.ReadAsStringAsync();
         if (!httpResponse.IsSuccessStatusCode)
         {
             throw new Exception(response);
         }
 
-        return JsonSerializer.Deserialize<UserDto>(response, new JsonSerializerOptions
+        return JsonSerializer.Deserialize<PostDto>(response, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
             }
         )!;
-
+        
     }
 
-
-
-    public IQueryable<UserDto> GetManyAsync()
+    public IQueryable<PostDto> GetManyAsync()
     {
-        HttpResponseMessage httpResponse = client.GetAsync("users").Result;
-        string response = httpResponse.Content.ReadAsStringAsync().Result;
+        HttpResponseMessage httpResponse =  client.GetAsync("posts").Result;
+        string response =  httpResponse.Content.ReadAsStringAsync().Result;
         if (!httpResponse.IsSuccessStatusCode)
         {
             throw new Exception(response);
         }
 
-        List<UserDto> users = JsonSerializer.Deserialize<List<UserDto>>(response, new JsonSerializerOptions
+        var posts = JsonSerializer.Deserialize<List<PostDto>>(response, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
             }
         )!;
 
-        return users.AsQueryable();
-
+        return posts.AsQueryable();
+        
     }
 }

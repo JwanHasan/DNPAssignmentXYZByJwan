@@ -1,4 +1,5 @@
 using BlazorApp.Components;
+using BlazorApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,8 +11,10 @@ builder.Services.AddScoped(sp => new HttpClient
     BaseAddress = new Uri ("https://localhost:5209/")
 }
 );
-
-
+// Dependency Injection for Services
+builder.Services.AddScoped<IUserService, HttpUserService>();
+builder.Services.AddScoped<IPostService, HttpPostService>();
+builder.Services.AddScoped<ICommentService, HttpCommentService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

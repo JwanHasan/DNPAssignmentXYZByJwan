@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using RepositoryContracts;
 using FileRepositories;
 using Entities;
+using System.Linq;
 
 
 namespace WebAPI.controller;
@@ -32,7 +33,7 @@ public class UserController : ControllerBase
             Id = created.Id,
             UserName = created.UserName
         };
-        return Created($"/user/{dto.Id}", created);
+        return Created($"/user/{dto.Id}", dto);
     }
 
     private async Task VerifyUserNameIsAvailableAsync(string requestUserName)
@@ -45,21 +46,22 @@ public class UserController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
-    public async Task<ActionResult<UserDto>> Update([FromBody] int id, [FromBody] RequestUserDto request)
+    public async Task<ActionResult<UserDto>> Update(int id, [FromBody] RequestUserDto request)
     {
-        var available = await userRepo.GetUserByUsernameAsync(request.UserName);
+        var available = await userRepo.GetSingleAsync(id);
  
-      if (request.UserName==null){ throw new Exception("User not found"); }
-      User update = new  User{Id = id, UserName = request.UserName};
+      if (available==null){ throw new Exception("User not found"); }
+      User update = new  User{Id = id, UserName = request.UserName ?? available.UserName};
       
        await userRepo.UpdateAsync(update);
-        return Accepted( update);
+       var dto = new UserDto{Id = update.Id, UserName = update.UserName};
+        return Accepted($"/user/{dto.Id}", dto);
     }
 
     [HttpGet("{id:int}")]
 
 
-    public async Task<ActionResult<UserDto>> GetSingle([FromBody]int id)
+    public async Task<ActionResult<UserDto>> GetSingle(int id)
     {
         var user = await userRepo.GetSingleAsync(id);
         if (user == null) return NotFound();
@@ -69,12 +71,13 @@ public class UserController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<List<UserDto>>> GetAllAsync()
     {
-       var many=  userRepo.GetManyAsync();
-       return Ok(many);
+       var many= userRepo.GetManyAsync();
+       var dtos = many.Select(u => new UserDto{Id = u.Id, UserName = u.UserName}).ToList();
+       return Ok(dtos);
     }
     
     [HttpDelete("{id:int}")]
-    public async Task<ActionResult> DeleteAsync([FromBody]int id)
+    public async Task<ActionResult> DeleteAsync(int id)
     {
         await userRepo.DeleteAsync(id);
         return NoContent();

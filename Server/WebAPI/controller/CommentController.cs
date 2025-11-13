@@ -2,11 +2,12 @@ using DTOContracts;
 using Entities;
 using Microsoft.AspNetCore.Mvc;
 using RepositoryContracts;
+using System.Linq;
 
 namespace WebAPI.controller;
 [ApiController]
 [Route("[controller]")]
-public class CommentController
+public class CommentController : ControllerBase
 {
    private readonly ICommentRepository _commentRepo;
 
@@ -30,7 +31,7 @@ public class CommentController
             Body = created.Body,
             UserId = created.UserId
         };
-        return OkResult($"/Comment/{dto.Id}", created);
+        return Created($"/Comment/{dto.Id}", dto);
     }
 
     private async Task VerifyCommentIdIsAvailableAsync(int requestId)
@@ -47,42 +48,45 @@ public class CommentController
     
 
     [HttpPut("{id:int}")]
-    public async Task<ActionResult<CommentDto>> UpdateComment([FromBody] int id )
+    public async Task<ActionResult<CommentDto>> UpdateComment(int id, [FromBody] RequestCommentDto request)
     {
         var available = await _commentRepo.GetSingleAsync(id);
  
       if (available==null){ throw new Exception("Comment not found"); }
-      Comment update = new  Comment{Id = id, Body = available.Body, UserId = available.UserId};
+      Comment update = new  Comment{Id = id, Body = request.Body ?? available.Body, UserId = request.UserId == 0 ? available.UserId : request.UserId};
       
        await _commentRepo.UpdateAsync(update);
-        return Accepted( update);
+       var dto = new CommentDto{Id = update.Id, Body = update.Body, UserId = update.UserId};
+        return Accepted($"/Comment/{dto.Id}", dto);
     }
 
     [HttpGet("{id:int}")]
 
 
-    public async Task<ActionResult<CommentDto>> GetSingle([FromBody]int id)
+    public async Task<ActionResult<CommentDto>> GetSingle(int id)
     {
         var comment = await _commentRepo.GetSingleAsync(id);
         if (comment == null)
         {
             throw new Exception("Post not found");
         }
-        return Ok((comment));
+        var dto = new CommentDto{Id = comment.Id, Body = comment.Body, UserId = comment.UserId};
+        return Ok(dto);
     }
 
     [HttpGet]
-    public  Task<ActionResult<List<CommentDto>>> GetAllAsync()
+    public async Task<ActionResult<List<CommentDto>>> GetAllAsync()
     {
-       var many=  _commentRepo.GetManyAsync();
-       return Ok(many);
+       var many= _commentRepo.GetManyAsync();
+       var dtos = many.Select(c => new CommentDto{Id = c.Id, Body = c.Body, UserId = c.UserId}).ToList();
+       return Ok(dtos);
     }
     
     [HttpDelete("{id:int}")]
-    public async Task<ActionResult> DeleteAsync([FromBody]int id)
+    public async Task<ActionResult> DeleteAsync(int id)
     {
         await _commentRepo.DeleteAsync(id);
-        return Ok();
+        return NoContent();
     }
     
      

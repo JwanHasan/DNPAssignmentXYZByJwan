@@ -21,6 +21,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// add a root endpoint to redirect to swagger (helps avoid 404 on http://localhost:PORT/)
+app.MapGet("/", () => Results.Redirect("/swagger"));
+
 app.MapControllers();
 app.UseHttpsRedirection();
 
@@ -29,4 +33,3 @@ app.UseHttpsRedirection();
 
 
 app.Run();
-
